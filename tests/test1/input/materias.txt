@@ -1,0 +1,3 @@
+7540	1	Algoritmos I	4	8
+6103	1	Análisis Matemático II	5	4
+6103	2	Análisis Matemático II	6	10

@@ -1,0 +1,6 @@
+alumno	1	alice
+alumno	2	bob
+docente	3	craig
+docente	4	mallory
+docente	4	eve
+docente	12	trudy

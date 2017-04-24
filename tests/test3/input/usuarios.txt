@@ -1,0 +1,4 @@
+alumno\t1\talice
+docente\t57\tbob
+docente\t22\tmarge
+docente\t1\tHuergo

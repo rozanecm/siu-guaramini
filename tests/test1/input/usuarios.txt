@@ -1,0 +1,12 @@
+alumno	1	alice
+alumno	2	bob
+alumno	3	craig
+alumno	7	Benitez
+alumno	8	Bermudez
+alumno	6	Banz
+alumno	9	Benz
+alumno	5	Binz
+alumno	4	Bonz
+docente	12	mallory
+docente	10	Acero
+docente	11	Prelat
