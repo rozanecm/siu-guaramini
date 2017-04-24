@@ -1,0 +1,10 @@
+#ifndef SIU_GUARAMINI_STUDENT_H
+#define SIU_GUARAMINI_STUDENT_H
+
+
+class Student {
+
+};
+
+
+#endif //SIU_GUARAMINI_STUDENT_H
