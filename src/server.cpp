@@ -12,7 +12,7 @@ void processSubjectsFile(std::string filepath,
                          std::map<std::pair<int, int>, Subject *> &subjects);
 
 int main(int argc, char *argv[]) {
-    /* check num. of arguments recieved */
+    /* check num. of arguments received */
 //    if (argc != 4){
 //        std::cerr<<"Invalid number of arguments"<<std::endl;
 //        return 0;
