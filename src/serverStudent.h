@@ -6,6 +6,7 @@
 
 class Student : public User{
 private:
+    int ID;
     std::string name;
 
 public:
@@ -13,7 +14,7 @@ public:
 //    virtual void enroll();
 //    virtual void unEnroll();
 
-    Student(std::string name);
+    Student(int id, std::string name);
 };
 
 

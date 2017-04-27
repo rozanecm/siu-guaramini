@@ -1,5 +1,3 @@
 #include "serverStudent.h"
 
-Student::Student(std::string name) {
-    this->name = name;
-}
+Student::Student(int id, std::string name) : ID(id), name(name){}
