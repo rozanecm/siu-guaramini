@@ -1,8 +1,6 @@
 #include "serverTeacher.h"
 
-Teacher::Teacher(std::string name) {
-    this->name = name;
-}
+Teacher::Teacher(int id, std::string name) : ID(id), name(name){}
 
 //void Teacher::listInscriptions() {
 //

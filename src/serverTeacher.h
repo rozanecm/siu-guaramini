@@ -12,7 +12,7 @@ private:
 
 
 public:
-    Teacher(std::string name);
+    Teacher(int id, std::string name);
 
 //    virtual void listInscriptions();
 };
