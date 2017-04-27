@@ -5,12 +5,14 @@
 
 class Subject {
 private:
+    int subjectID;
+    int courseID;
     int teacherID;
     int vacantes;   //todo translate name
     std::string description;
 
 public:
-    Subject(int teacherID, int vacantes, std::string description);
+    Subject(int subjectID, int courseID, int teacherID, int vacantes, std::string description);
 };
 
 
