@@ -4,10 +4,6 @@
 
 class User {
 public:
-//    void listSubjects();
-//    virtual void listInscriptions() = 0;
-//    virtual void enroll();
-//    virtual void unEnroll();
 };
 
 
