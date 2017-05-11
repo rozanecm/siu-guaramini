@@ -60,7 +60,16 @@ int main(int argc, char *argv[]) {
         socket.socket_send(input.c_str(), msgSize);
 
         /* read msg from server */
-        std::string msgFromServer = socket.socket_recv(socketWasShutDown);
+        /* first get msg's length */
+        size_t messageToReadLength;
+        socket.socket_recv(socketWasShutDown, BYTESFORLENGTHOFMESSAGE,
+                           (char*)&messageToReadLength);
+        messageToReadLength = ntohl(messageToReadLength);
+        /* get actual msg */
+        std::string msgFromServer;
+        socket.socket_recv(socketWasShutDown, BYTESFORLENGTHOFMESSAGE,
+                           (char*)&msgFromServer);
+
         /* print server1 msg */
         std::cout<<msgFromServer;
     }

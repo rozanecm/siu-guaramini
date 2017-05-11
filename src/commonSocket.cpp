@@ -37,17 +37,12 @@ void commonSocket::socket_close() {
     }
 }
 
-std::string commonSocket::socket_recv(bool &socketShutDown) {
-    //todo arreglar nro. magico.
-    char messageToRecieve[500];
-    size_t messageToReadLength = getLengthOfMsgToRead();
-    if (messageToReadLength == 0){
-        socketShutDown = true;
-    }
+void commonSocket::socket_recv(bool &socketShutDown, size_t messageToReadLength,
+                          char *messageToReceive) {
     size_t totalRecievedAmount = 0;
     ssize_t lastRecievedAmount = 0;
     while (totalRecievedAmount < messageToReadLength && !socketShutDown){
-        lastRecievedAmount = recv(fd, &messageToRecieve[totalRecievedAmount],
+        lastRecievedAmount = recv(fd, &messageToReceive[totalRecievedAmount],
                                   messageToReadLength-totalRecievedAmount,
                                   MSG_NOSIGNAL);
         /* ERROR CHECK */
@@ -62,33 +57,5 @@ std::string commonSocket::socket_recv(bool &socketShutDown) {
             totalRecievedAmount += lastRecievedAmount;
         }
     }
-    std::string asdf = std::string(&messageToRecieve[0],
-                                  &messageToRecieve[messageToReadLength]);
-    return asdf;
 }
 
-size_t commonSocket::getLengthOfMsgToRead() {
-    size_t lengthToRecieve = 0;
-    bool socketShutDown = false;
-    size_t totalRecievedAmount = 0;
-    ssize_t lastRecievedAmount = 0;
-    while (totalRecievedAmount < 4 && !socketShutDown){
-        /* aka until socket is not shut down */
-        lastRecievedAmount = recv(fd, ((char*)&lengthToRecieve) +
-                                          totalRecievedAmount,
-                                  4 - totalRecievedAmount,
-                                  MSG_NOSIGNAL);
-        /* ERROR CHECK */
-        if (lastRecievedAmount == -1){
-            int error = errno;
-            throw TPException(std::string("Error en el recieve: ") +
-                              strerror(error));
-        } else if (lastRecievedAmount == 0) {
-            /* socket was shut down */
-            socketShutDown = true;
-        } else {
-            totalRecievedAmount += lastRecievedAmount;
-        }
-    }
-    return ntohl(lengthToRecieve);
-}

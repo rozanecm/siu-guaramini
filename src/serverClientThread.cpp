@@ -10,7 +10,17 @@ ClientThread::ClientThread(ServerSocket serverSocket1, serverMonitor &server,
 
 void ClientThread::run() {
     bool socketWasClosed = false;
-    std::string clientData =  serverSocket.socket_recv(socketWasClosed);
+
+    /* first get msg's length */
+    size_t messageToReadLength;
+    serverSocket.socket_recv(socketWasClosed, BYTESFORLENGTHOFMESSAGE,
+                       (char*)&messageToReadLength);
+    messageToReadLength = ntohl(messageToReadLength);
+    /* get actual msg */
+    std::string clientData;
+    serverSocket.socket_recv(socketWasClosed, BYTESFORLENGTHOFMESSAGE,
+                       (char*)&clientData);
+
     /* from the client data, get what type of user just connected */
     clientData = clientData.substr(0, clientData.find_first_of("\f"));
     std::string userType =
@@ -21,7 +31,6 @@ void ClientThread::run() {
     if (userType != "admin") {
         /* if it is not admin, get its id */
         userIDstring = clientData;
-//        userIDstring = clientData.substr(clientData.find_first_of(" ") + 1);
     }
 
     if (!server.validateClientData(userType, userIDstring)){
@@ -33,8 +42,15 @@ void ClientThread::run() {
 
     while (!socketWasClosed && !quit){
         /* get msg from client */
-        std::string receivedMsg = serverSocket.
-                socket_recv(socketWasClosed);
+        /* first get msg's length */
+        size_t messageToReadLength;
+        serverSocket.socket_recv(socketWasClosed, BYTESFORLENGTHOFMESSAGE,
+                           (char*)&messageToReadLength);
+        messageToReadLength = ntohl(messageToReadLength);
+        /* get actual msg */
+        std::string receivedMsg;
+        serverSocket.socket_recv(socketWasClosed, BYTESFORLENGTHOFMESSAGE,
+                           (char*)&clientData);
 
         /* retrieve commmand from msg */
         std::string command = receivedMsg.substr(0, 2);
@@ -49,7 +65,8 @@ void ClientThread::run() {
             /* first send msg length */
             unsigned long msgSize = msgToSend.size();
             uint32_t netLenMsgSize = htonl(msgSize);
-            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+            serverSocket.socket_send((char*)&netLenMsgSize,
+                                     BYTESFORLENGTHOFMESSAGE);
             /* send actual msg */
             serverSocket.socket_send(msgToSend.c_str(), msgSize);
         }else if (command == "li"){
@@ -61,7 +78,8 @@ void ClientThread::run() {
             /* first send msg length */
             unsigned long msgSize = msgToSend.size();
             uint32_t netLenMsgSize = htonl(msgSize);
-            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+            serverSocket.socket_send((char*)&netLenMsgSize,
+                                     BYTESFORLENGTHOFMESSAGE);
             /* send actual msg */
             serverSocket.socket_send(msgToSend.c_str(), msgSize);
         }else if (command == "in"){
@@ -88,7 +106,8 @@ void ClientThread::run() {
             /* first send msg length */
             unsigned long msgSize = msgForClient.size();
             uint32_t netLenMsgSize = htonl(msgSize);
-            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+            serverSocket.socket_send((char*)&netLenMsgSize,
+                                     BYTESFORLENGTHOFMESSAGE);
             /* send actual msg */
             serverSocket.socket_send(msgForClient.c_str(), msgSize);
         }else if (command == "de"){
@@ -117,7 +136,8 @@ void ClientThread::run() {
             /* first send msg length */
             unsigned long msgSize = msgForClient.size();
             uint32_t netLenMsgSize = htonl(msgSize);
-            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+            serverSocket.socket_send((char*)&netLenMsgSize,
+                                     BYTESFORLENGTHOFMESSAGE);
 
             /* send actual msg */
             serverSocket.socket_send(msgForClient.c_str(), msgSize);

@@ -13,13 +13,10 @@ public:
     void socket_send(const char *messageToSend,
                      unsigned long messageLength);
 
-    std::string socket_recv(bool &socketShutDown);
+    void socket_recv(bool &socketShutDown, size_t messageToReadLength,
+                     char *messageToReceive);
 
     void socket_close();
-
-private:
-    size_t getLengthOfMsgToRead();
-
 };
 
 
