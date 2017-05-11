@@ -1,5 +1,8 @@
 #include "serverClientThread.h"
 #include <string>
+#include <netinet/in.h>
+
+#define BYTESFORLENGTHOFMESSAGE 4
 
 ClientThread::ClientThread(ServerSocket serverSocket1, serverMonitor &server,
                            bool &quit) :
@@ -42,13 +45,25 @@ void ClientThread::run() {
             /* command code: lm -> listar materias */
             server.informReceivedCommand(userType, userIDstring, "lm");
             std::string msgToSend = server.listSubjects();
-            serverSocket.socket_send(msgToSend);
+
+            /* first send msg length */
+            unsigned long msgSize = msgToSend.size();
+            uint32_t netLenMsgSize = htonl(msgSize);
+            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+            /* send actual msg */
+            serverSocket.socket_send(msgToSend.c_str(), msgSize);
         }else if (command == "li"){
             /* command code: li -> listar inscripciones */
             server.informReceivedCommand(userType, userIDstring, "li");
             std::string msgToSend = server.
                     listEnrollments(userType, std::stoi(userIDstring));
-            serverSocket.socket_send(msgToSend);
+
+            /* first send msg length */
+            unsigned long msgSize = msgToSend.size();
+            uint32_t netLenMsgSize = htonl(msgSize);
+            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+            /* send actual msg */
+            serverSocket.socket_send(msgToSend.c_str(), msgSize);
         }else if (command == "in"){
             /* command code: in -> inscribirse */
             server.informReceivedCommand(userType, userIDstring, "in");
@@ -69,7 +84,13 @@ void ClientThread::run() {
                 msgForClient = server.enroll(idAlumno, codigoMateria,
                                              codigoCurso);
             }
-            serverSocket.socket_send(msgForClient);
+
+            /* first send msg length */
+            unsigned long msgSize = msgForClient.size();
+            uint32_t netLenMsgSize = htonl(msgSize);
+            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+            /* send actual msg */
+            serverSocket.socket_send(msgForClient.c_str(), msgSize);
         }else if (command == "de"){
             /* command code: de -> desinscribirse */
             server.informReceivedCommand(userType, userIDstring, "de");
@@ -92,7 +113,14 @@ void ClientThread::run() {
                 msgForClient = server.unEnroll(idAlumno, codigoMateria,
                                                codigoCurso);
             }
-            serverSocket.socket_send(msgForClient);
+
+            /* first send msg length */
+            unsigned long msgSize = msgForClient.size();
+            uint32_t netLenMsgSize = htonl(msgSize);
+            serverSocket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+
+            /* send actual msg */
+            serverSocket.socket_send(msgForClient.c_str(), msgSize);
         }
     }
     serverSocket.socket_close();

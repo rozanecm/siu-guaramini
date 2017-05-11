@@ -7,13 +7,10 @@
 #include "commonSocket.h"
 #include "commonTPException.h"
 
-void commonSocket::socket_send(std::string &messageToSend) {
-    size_t messageLength = messageToSend.size();
-    uint32_t nlength = htonl(messageLength);
-
-    sendLength(nlength);
+void commonSocket::socket_send(const char *messageToSend,
+                               unsigned long messageLength) {
     size_t totalSentAmount = 0;
-    ssize_t lastSentAmount = send(fd, messageToSend.c_str(), messageLength,
+    ssize_t lastSentAmount = send(fd, messageToSend, messageLength,
                                   MSG_NOSIGNAL);
     totalSentAmount += lastSentAmount;
     while (totalSentAmount < messageLength) {

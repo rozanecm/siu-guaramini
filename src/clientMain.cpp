@@ -4,6 +4,8 @@
 #include "commonTPException.h"
 #include "clientSocket.h"
 
+#define BYTESFORLENGTHOFMESSAGE 4
+
 int main(int argc, char *argv[]) {
     /* check num. of arguments recieved */
     if (argc < 4){
@@ -29,7 +31,12 @@ int main(int argc, char *argv[]) {
     clientSocket socket(serverIP, portToConnect);
 
     /* send client information to server1 */
-    socket.socket_send(clientInfo);
+    /* first send msg length */
+    unsigned long msgSize = clientInfo.size();
+    uint32_t netLenMsgSize = htonl(msgSize);
+    socket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+    /* send actual msg */
+    socket.socket_send(clientInfo.c_str(), msgSize);
 
     std::string input;
     while (getline(std::cin, input)){
@@ -45,7 +52,14 @@ int main(int argc, char *argv[]) {
         }else if (command == "desinscribir"){
             input.insert(0, "de");
         }
-        socket.socket_send(input);
+        /* first send msg length */
+        unsigned long msgSize = input.size();
+        uint32_t netLenMsgSize = htonl(msgSize);
+        socket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
+        /* send actual msg */
+        socket.socket_send(input.c_str(), msgSize);
+
+        /* read msg from server */
         std::string msgFromServer = socket.socket_recv(socketWasShutDown);
         /* print server1 msg */
         std::cout<<msgFromServer;
