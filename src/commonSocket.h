@@ -10,7 +10,8 @@ protected:
     int fd;
 
 public:
-    void socket_send(std::string &messageToSend);
+    void socket_send(const char *messageToSend,
+                     unsigned long messageLength);
 
     std::string socket_recv(bool &socketShutDown);
 
@@ -19,7 +20,6 @@ public:
 private:
     size_t getLengthOfMsgToRead();
 
-    void sendLength(const size_t &lengthToSend);
 };
 
 

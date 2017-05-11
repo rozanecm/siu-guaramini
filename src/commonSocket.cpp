@@ -26,25 +26,6 @@ void commonSocket::socket_send(const char *messageToSend,
     }
 }
 
-void commonSocket::sendLength(const size_t &lengthToSend) {
-    size_t messageLength = 4;
-    size_t totalSentAmount = 0;
-    ssize_t lastSentAmount = send(fd, &lengthToSend, messageLength,
-                                  MSG_NOSIGNAL);
-    totalSentAmount += lastSentAmount;
-    while (totalSentAmount < messageLength) {
-        if (lastSentAmount == -1) {
-            int errorNum = errno;
-            throw TPException(std::string("Error en el send: ") +
-                              strerror(errorNum));
-        }
-        totalSentAmount += lastSentAmount;
-        lastSentAmount = send(fd, &lengthToSend + totalSentAmount,
-                              messageLength - totalSentAmount,
-                              MSG_NOSIGNAL);
-    }
-}
-
 void commonSocket::socket_close() {
     int ret = close(fd);
 
