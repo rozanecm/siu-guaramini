@@ -1,4 +1,5 @@
 #include <netdb.h>
+#include <string>
 #include <unistd.h>
 #include <cstring>
 #include "clientSocket.h"

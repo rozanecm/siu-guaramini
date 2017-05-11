@@ -9,7 +9,7 @@ private:
     int subjectID;
     int courseID;
     int teacherID;
-    int vacantes;   //todo translate name
+    int vacantes;
     std::string description;
     std::forward_list<int> enrolledStudents;
 

@@ -5,17 +5,15 @@
 #include <thread>
 
 class Thread {
-private:
+protected:
     std::thread thread;
 
 public:
     void start();
 
-    void join();
-
     virtual void run() = 0;
 
-    virtual ~Thread();
+    void join();
 };
 
 

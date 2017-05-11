@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <utility>
+#include <string>
 #include <map>
 #include "serverStudent.h"
 
@@ -23,6 +25,7 @@ bool Student::isEnrolledIn(const int &subjectID, const int &courseID) {
 std::string
 Student::listEnrollments(const std::map<std::pair<int, int>, Subject> &subjects,
                          const std::map<int, Teacher> &teachers) {
+    enrolledSubjects.sort();
     std::string retStrng;
     for (auto it = enrolledSubjects.begin(); it != enrolledSubjects.end();
          ++it){

@@ -1,4 +1,5 @@
 #include "commonTPException.h"
+#include <string>
 
 TPException::TPException(std::string msg) : msg(msg){}
 

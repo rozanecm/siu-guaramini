@@ -6,6 +6,8 @@
 #include "serverStudent.h"
 #include "serverTeacher.h"
 #include "serverSubject.h"
+#include <string>
+#include <utility>
 
 class Subject;
 
@@ -13,10 +15,8 @@ class server {
 private:
     std::map<int, Student> students;    /* map<id, Student> */
     std::map<int, Teacher> teachers;    /* map<id, Teacher> */
-    std::map<std::pair<int, int>, Subject> subjects;    /* codigo materia -
-                                                         * codigo curso -
-                                                         * Subject
-                                                         * */
+    std::map<std::pair<int, int>, Subject> subjects;
+    /* codigo materia - codigo curso - Subject */
 
     bool isValidID(const int &id, const std::string &userType);
 

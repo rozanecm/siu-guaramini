@@ -9,9 +9,9 @@ class TPException : public std::exception{
 private:
     std::string msg;
 public:
-    TPException(std::string msg);
+    explicit TPException(std::string msg);
 
-    virtual const char* what() const noexcept ;
+    virtual const char* what() const noexcept;
 };
 
 

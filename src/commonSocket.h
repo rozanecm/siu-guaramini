@@ -12,7 +12,6 @@ protected:
 public:
     void socket_send(std::string &messageToSend);
 
-
     std::string socket_recv(bool &socketShutDown);
 
     void socket_close();

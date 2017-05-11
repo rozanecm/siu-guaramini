@@ -1,5 +1,8 @@
 #include "serverTeacher.h"
-#include "serverUser.h"
+#include <utility>
+#include <string>
+#include <map>
+#include <sstream>
 #include "serverSubject.h"
 
 Teacher::Teacher(int id, std::string name) : ID(id), name(name){}
@@ -22,24 +25,45 @@ Teacher::listEnrollments(const std::map<std::pair<int, int>, Subject> &subjects,
                          const std::map<int, Student> &students) {
     /* construct first line of msg */
     /* insert subject ID */
-    std::string retMsg = std::to_string(subjectID) + " - ";
+    std::stringstream retMsg;
+    retMsg<<std::to_string(subjectID)<<" - ";
     /* insert description */
-    retMsg.append(subjects.at(std::pair<int, int>(subjectID, courseID)).
+    retMsg<<(subjects.at(std::pair<int, int>(subjectID, courseID)).
             getDescription());
     /* insert course ID */
-    retMsg.append(", Curso " + std::to_string(courseID) + ", ");
+    retMsg<<(", Curso " + std::to_string(courseID) + ", ");
     /* insert prof. name */
-    retMsg.append(name + ".\n");
+    retMsg<<(name + ".\n");
     /* insert students' names */
     for (auto it = enrolledStudents.cbegin(); it != enrolledStudents.cend();
          ++it){
         int studentID = (*it).first;
         /* insert student's id */
-        retMsg.append(std::to_string(studentID) + " ");
+        retMsg<<(std::to_string(studentID) + " ");
         /* insert student's id */
-        retMsg.append(students.at(studentID).getName() + "\n");
+        retMsg<<(students.at(studentID).getName() + "\n");
     }
-    return retMsg;
+//    /* construct first line of msg */
+//    /* insert subject ID */
+//    std::string retMsg = std::to_string(subjectID) + " - ";
+//    /* insert description */
+//    retMsg.append(subjects.at(std::pair<int, int>(subjectID, courseID)).
+//            getDescription());
+//    /* insert course ID */
+//    retMsg.append(", Curso " + std::to_string(courseID) + ", ");
+//    /* insert prof. name */
+//    retMsg.append(name + ".\n");
+//    /* insert students' names */
+//    for (auto it = enrolledStudents.cbegin(); it != enrolledStudents.cend();
+//         ++it){
+//        int studentID = (*it).first;
+//        /* insert student's id */
+//        retMsg.append(std::to_string(studentID) + " ");
+//        /* insert student's id */
+//        retMsg.append(students.at(studentID).getName() + "\n");
+//    }
+//    return retMsg;
+    return retMsg.str();
 }
 
 void Teacher::setSubjectAndCourseID(const int &subjectID, const int &courseID) {

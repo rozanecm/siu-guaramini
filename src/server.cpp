@@ -1,8 +1,10 @@
 #include "serverSubject.h"
-#include "serverUser.h"
+#include <utility>
+#include <string>
 #include <fstream>
 #include <map>
 #include <iostream>
+#include <sstream>
 #include "server.h"
 #include "serverTeacher.h"
 #include "serverStudent.h"
@@ -18,7 +20,6 @@ void server::processSubjectsFile(std::string filepath) {
 
     std::string description, subjectID, courseID, teacherID, vacantes;
     while (getline(subjectsFile, subjectID, '\t')) {
-
         getline(subjectsFile, courseID, '\t');
         getline(subjectsFile, description, '\t');
 
@@ -74,17 +75,23 @@ server::validateClientData(const std::string &userType,
     if (userType == "alumno" || userType == "docente"){
         int userID = std::stoi(userIDstring);
         if (!isValidID(userID, userType)){
-            std::cerr<<userIDstring<<" es un "<<userType<<" inválido.\n";
+            std::stringstream s;
+            s<<userIDstring<<" es un "<<userType<<" inválido.\n";
+            std::cerr<<s.str();
             return false;
         }
         /* output message of new connection */
-        std::cerr<<userType<<" "<<userIDstring<<" conectado."<<'\n';
+        std::string s;
+        s = userType + " " + userIDstring + " conectado.\n";
+        std::cerr<<s;
     }else if (userType == "admin"){
-        /* output message of new connection */
+        /* output message of new connection */std::stringstream s;
         std::cerr<<userType<<" conectado."<<'\n';
+        std::cerr<<s.str();
     }else{
-        /* invalid user */
+        /* invalid user */std::stringstream s;
         std::cerr<<userType<<" es un tipo de usuario inválido.\n";
+        std::cerr<<s.str();
         return false;
     }
     return true;
@@ -93,19 +100,39 @@ server::validateClientData(const std::string &userType,
 void server::informReceivedCommand(const std::string &userType,
                                    const std::string &userID,
                                    const char *command) {
-    if (userType != "admin"){
-        std::cerr<<userType<<" "<<userID<<" ejecuta "<<command<<"\n";
+    std::string originalCommand = command;
+    std::string extendedCommand;
+    if (originalCommand == "lm"){
+        extendedCommand = "listarMaterias";
+    }else if (originalCommand == "li"){
+        extendedCommand = "listarInscripciones";
+    }else if (originalCommand == "in"){
+        extendedCommand = "inscribir";
     }else{
-        std::cerr<<userType<<" ejecuta "<<command<<"\n";
+        extendedCommand = "desinscribir";
+    }
+
+    std::stringstream s;
+
+    if (userType != "admin"){
+        s<<userType<<" "<<userID<<" ejecuta "<<extendedCommand<<".\n";
+        std::cerr<<s.str();
+    }else{
+        s<<userType<<" ejecuta "<<extendedCommand<<".\n";
+        std::cerr<<s.str();
     }
 }
 
 void server::informDisconnect(const std::string &userType,
                               const std::string &userID) {
+    std::stringstream s;
+
     if (userType != "admin"){
-        std::cerr<<userType<<" "<<userID<<" desconectado.\n";
+        s<<userType<<" "<<userID<<" desconectado.\n";
+        std::cerr<<s.str();
     }else{
-        std::cerr<<userType<<" desconectado.\n";
+        s<<userType<<" desconectado.\n";
+        std::cerr<<s.str();
     }
 }
 
@@ -135,8 +162,14 @@ std::string server::listEnrollments(const std::string &userType,
     }else if (userType == "docente"){
         return teachers.at(id).listEnrollments(subjects,
                                                students);
+    }else{
+        std::string enrollmentsMsg;
+        for (auto it = subjects.cbegin(); it != subjects.cend(); ++it){
+            enrollmentsMsg.append(teachers.at((*it).second.getTeacherID()).
+                    listEnrollments(subjects, students));
+        }
+        return enrollmentsMsg;
     }
-    return std::__cxx11::string();
 }
 
 std::string server::enroll(const int &studentID, const int &codigoMateria,
@@ -161,7 +194,7 @@ std::string server::enroll(const int &studentID, const int &codigoMateria,
 std::string
 server::enroll(const int &studentID, const int &subjectID, const int &courseID,
                const int &teacherID) {
-    if (teachers.count(teacherID) == 0 ){
+    if (teachers.count(teacherID) == 0){
         std::string retStrg = "No tiene permisos para operar sobre " +
                               std::to_string(subjectID) +
                               ", curso " + std::to_string(courseID) + ".\n";
@@ -192,7 +225,7 @@ std::string
 server::unEnroll(const int &studentID, const int &subjectID,
                  const int &courseID,
                const int &teacherID) {
-    if (teachers.count(teacherID) == 0 ){
+    if (teachers.count(teacherID) == 0){
         std::string retStrg = "No tiene permisos para operar sobre " +
                               std::to_string(subjectID) +
                               ", curso " + std::to_string(courseID) + ".\n";

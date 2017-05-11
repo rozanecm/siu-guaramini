@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <string>
 #include <errno.h>
 #include <cstring>
 #include <unistd.h>
@@ -7,7 +8,7 @@
 #include "commonTPException.h"
 
 void commonSocket::socket_send(std::string &messageToSend) {
-    size_t messageLength = messageToSend.size() + 1;
+    size_t messageLength = messageToSend.size();
     uint32_t nlength = htonl(messageLength);
 
     sendLength(nlength);
@@ -50,7 +51,7 @@ void commonSocket::sendLength(const size_t &lengthToSend) {
 void commonSocket::socket_close() {
     int ret = close(fd);
 
-    /* VERIFICACION DE ERRORES */
+    /* ERROR CHECK */
     if (ret == -1){
         int error = errno;
         throw TPException(std::string("Error en el cierre del socket: ") +
@@ -59,25 +60,22 @@ void commonSocket::socket_close() {
 }
 
 std::string commonSocket::socket_recv(bool &socketShutDown) {
+    //todo arreglar nro. magico.
     char messageToRecieve[500];
-//    std::string messageToRecieve;
     size_t messageToReadLength = getLengthOfMsgToRead();
     if (messageToReadLength == 0){
         socketShutDown = true;
     }
-//    bool socketShutDown = false;
     size_t totalRecievedAmount = 0;
     ssize_t lastRecievedAmount = 0;
     while (totalRecievedAmount < messageToReadLength && !socketShutDown){
-        //todo verificar este comentario (el de abajo)
-        /* aka until socket is not shut down */
         lastRecievedAmount = recv(fd, &messageToRecieve[totalRecievedAmount],
                                   messageToReadLength-totalRecievedAmount,
                                   MSG_NOSIGNAL);
         /* ERROR CHECK */
         if (lastRecievedAmount == -1){
             int error = errno;
-            throw TPException(std::string("Error en el recieve: ") +
+            throw TPException(std::string("Error en el receive: ") +
                                       strerror(error));
         } else if (lastRecievedAmount == 0) {
             /* socket was shut down */
@@ -86,8 +84,9 @@ std::string commonSocket::socket_recv(bool &socketShutDown) {
             totalRecievedAmount += lastRecievedAmount;
         }
     }
-    return std::string(&messageToRecieve[0],
-                       &messageToRecieve[messageToReadLength]);
+    std::string asdf = std::string(&messageToRecieve[0],
+                                  &messageToRecieve[messageToReadLength]);
+    return asdf;
 }
 
 size_t commonSocket::getLengthOfMsgToRead() {
@@ -96,7 +95,7 @@ size_t commonSocket::getLengthOfMsgToRead() {
     size_t totalRecievedAmount = 0;
     ssize_t lastRecievedAmount = 0;
     while (totalRecievedAmount < 4 && !socketShutDown){
-        /*aka until socket is not shut down*/
+        /* aka until socket is not shut down */
         lastRecievedAmount = recv(fd, ((char*)&lengthToRecieve) +
                                           totalRecievedAmount,
                                   4 - totalRecievedAmount,

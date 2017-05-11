@@ -1,4 +1,5 @@
 #include <netdb.h>
+#include <string>
 #include <cstring>
 #include <unistd.h>
 #include "serverSocket.h"
@@ -83,4 +84,15 @@ ServerSocket ServerSocket::socket_accept() {
                                   strerror(error));
     }
     return ServerSocket(ret);
+}
+
+void ServerSocket::socket_shutdown() {
+    int ret = shutdown(fd, SHUT_RDWR);
+
+    /* ERROR CHECK */
+    if (ret == -1){
+        int error = errno;
+        throw TPException(std::string("Error en shutdown del socket: ") +
+                                  strerror(error));
+    }
 }

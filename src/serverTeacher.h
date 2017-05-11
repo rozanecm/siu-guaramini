@@ -2,13 +2,13 @@
 #define SIU_GUARAMINI_TEACHER_H
 
 #include <string>
+#include <utility>
 #include <map>
-#include "serverUser.h"
 
 class Subject;
 class Student;
 
-class Teacher :public User{
+class Teacher {
 private:
     int ID;
 
@@ -26,13 +26,13 @@ public:
 
     std::string getName() const;
 
-    virtual std::string listEnrollments
+    std::string listEnrollments
             (const std::map<std::pair<int, int>, Subject> &subjects,
              const std::map<int, Student> &students);
 
-    virtual void enroll(int studentID, int codigoMateria, int codigoCurso);
+    void enroll(int studentID, int codigoMateria, int codigoCurso);
 
-    virtual void unEnroll(int studentID);
+    void unEnroll(int studentID);
 
     void setSubjectAndCourseID(const int &subjectID, const int &courseID);
 };

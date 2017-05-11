@@ -1,4 +1,5 @@
 #include "serverSubject.h"
+#include <string>
 
 Subject::Subject(int subjectID, int courseID, int teacherID, int vacantes,
                  std::string description) : subjectID(subjectID),

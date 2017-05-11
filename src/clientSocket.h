@@ -6,7 +6,7 @@
 
 class clientSocket : public commonSocket {
 public:
-    clientSocket (const char *serverIP, const char *port);
+    clientSocket(const char *serverIP, const char *port);
 };
 
 

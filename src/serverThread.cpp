@@ -7,5 +7,3 @@ void Thread::start() {
 void Thread::join() {
     this->thread.join();
 }
-
-Thread::~Thread() {}

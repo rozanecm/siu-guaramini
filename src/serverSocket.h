@@ -7,13 +7,15 @@
 
 class ServerSocket : public commonSocket {
 public:
-    ServerSocket(int fd);
+    explicit ServerSocket(int fd);
 
-    ServerSocket(const char *port);
+    explicit ServerSocket(const char *port);
 
     void socket_listen();
 
     ServerSocket socket_accept();
+
+    void socket_shutdown();
 };
 
 

@@ -3,15 +3,17 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "serverUser.h"
+#include <algorithm>
+#include <string>
 #include "server.h"
 #include "serverSocket.h"
 #include "commonTPException.h"
 #include "serverThread.h"
+#include "serverQuitThread.h"
+#include "serverClientThread.h"
+#include <list>
 
 #define SUCCESSRETURNVALUE 0
-
-void freeUsers(std::map<int, User *> &users);
 
 int main(int argc, char *argv[]) {
     /* check num. of arguments received */
@@ -29,147 +31,44 @@ int main(int argc, char *argv[]) {
     server.processUsersFile(usersFilepath);
     server.processSubjectsFile(subjectsFilepath);
 
+    serverMonitor serverMonitor1(server);
+
     ServerSocket serverSocket(port);
     serverSocket.socket_listen();
 
-    std::vector<Thread> threads;
+    /* vector with client threads */
+    std::list<ClientThread> clientThreads;
 
-    while(true){
-        ServerSocket serverSocket1 = serverSocket.socket_accept();
-        bool socketWasClosed = false;
-        std::string clientData =  serverSocket1.socket_recv(socketWasClosed);
-        /* from the client data, get what type of user just connected */
-        clientData = clientData.substr(0, clientData.find_first_of("\f"));
-        std::string userType =
-                clientData.substr(0, clientData.find_first_of(" "));
-        std::string userIDstring;
+    /* bool to check if q was entered in server1.
+     * According to the statement, all activities should be terminated
+     * when the server1 receives a 'q' from input
+     * */
+    bool haveToQuit = false;
+    /* thread checking for q input in server1 */
+    QuitThread quitThread(haveToQuit, serverSocket);
+    quitThread.start();
 
-        if (userType != "admin") {
-            /* if it is not admin, get its id */
-            userIDstring = clientData.substr(clientData.find_first_of(" ") + 1);
-        }
-
-        if (!server.validateClientData(userType, userIDstring)){
-            serverSocket1.socket_close();
-            socketWasClosed = true;
-            /* inform disconnect */
-            server.informDisconnect(userType, userIDstring);
-        }
-
-        while(!socketWasClosed){
-            /* get msg from client */
-            std::string receivedMsg = serverSocket1.
-                    socket_recv(socketWasClosed);
-
-            /* retrieve commmand from msg */
-            std::string command = receivedMsg.substr(0, 2);
-            receivedMsg.erase(0, 3);
-
-            /* process command */
-            if (command == "lm"){
-                /* command code: lm -> listar materias */
-                server.informReceivedCommand(userType, userIDstring, "lm");
-                std::string msgToSend = server.listSubjects();
-                serverSocket1.socket_send(msgToSend);
-            }else if (command == "li"){
-                /* command code: li -> listar inscripciones */
-                server.informReceivedCommand(userType, userIDstring, "li");
-                std::string msgToSend = server.
-                        listEnrollments(userType, std::stoi(userIDstring));
-                serverSocket1.socket_send(msgToSend);
-            }else if (command == "in"){
-                /* command code: in -> inscribirse */
-                server.informReceivedCommand(userType, userIDstring, "in");
-
-                std::string idAlumno, codigoMateria, codigoCurso;
-                std::string msgForClient;
-
-                /* get data from input */
-                if (userType == "alumno"){
-                    /* get codigo materia */
-                    codigoMateria = receivedMsg.
-                            substr(0, receivedMsg.find(' '));
-                    receivedMsg.erase(0, receivedMsg.find(' ') + 1);
-
-                    /* get codigo curso */
-                    codigoCurso = receivedMsg;
-
-                    /* set id alumno */
-                    idAlumno = userIDstring;
-                }else{
-                    /* get id alumno */
-                    idAlumno = receivedMsg.substr(0, receivedMsg.find(' '));
-                    receivedMsg.erase(0, receivedMsg.find(' ') + 1);
-
-                    /* get codigo materia */
-                    codigoMateria = receivedMsg.
-                            substr(0, receivedMsg.find(' '));
-                    receivedMsg.erase(0, receivedMsg.find(' ') + 1);
-
-                    /* get codigo curso */
-                    codigoCurso = receivedMsg;
+    try {
+        while (!haveToQuit){
+            /* first remove inactive threads */
+            for (auto it = clientThreads.begin(); it != clientThreads.end();
+                 ++it){
+                if ((*it).isErasable()){
+                    (*it).join();
+                    it = clientThreads.erase(it);
                 }
-                /* proceed to enrollment */
-                if (userType == "docente"){
-                    msgForClient = server.enroll(std::stoi(idAlumno),
-                                                 std::stoi(codigoMateria),
-                                                 std::stoi(codigoCurso),
-                                                 std::stoi(userIDstring));
-                } else{
-                    msgForClient = server.enroll(std::stoi(idAlumno),
-                                                 std::stoi(codigoMateria),
-                                                 std::stoi(codigoCurso));
-                }
-                serverSocket1.socket_send(msgForClient);
-            }else if (command == "de"){
-                /* command code: de -> desinscribirse */
-                server.informReceivedCommand(userType, userIDstring, "de");
-
-                std::string idAlumno, codigoMateria, codigoCurso;
-                std::string msgForClient;
-
-                /* get data from input */
-                if (userType == "alumno"){
-                    /* get codigo materia */
-                    codigoMateria = receivedMsg.
-                            substr(0, receivedMsg.find(' '));
-                    receivedMsg.erase(0, receivedMsg.find(' ') + 1);
-
-                    /* get codigo curso */
-                    codigoCurso = receivedMsg;
-
-                    /* set id alumno */
-                    idAlumno = userIDstring;
-                }else{
-                    /* get id alumno */
-                    idAlumno = receivedMsg.substr(0, receivedMsg.find(' '));
-                    receivedMsg.erase(0, receivedMsg.find(' ') + 1);
-
-                    /* get codigo materia */
-                    codigoMateria = receivedMsg.
-                            substr(0, receivedMsg.find(' '));
-                    receivedMsg.erase(0, receivedMsg.find(' ') + 1);
-
-                    /* get codigo curso */
-                    codigoCurso = receivedMsg;
-                }
-                /* proceed to enrollment */
-                if (userType == "docente"){
-                    msgForClient = server.unEnroll(std::stoi(idAlumno),
-                                                 std::stoi(codigoMateria),
-                                                 std::stoi(codigoCurso),
-                                                 std::stoi(userIDstring));
-                } else{
-                    msgForClient = server.unEnroll(std::stoi(idAlumno),
-                                                 std::stoi(codigoMateria),
-                                                 std::stoi(codigoCurso));
-                }
-                serverSocket1.socket_send(msgForClient);
             }
-        }
-        break;
-    }
 
+            clientThreads.emplace_back(serverSocket.socket_accept(),
+                                       serverMonitor1, haveToQuit);
+            clientThreads.back().start();
+        }
+    }catch (const TPException &e){}
+
+    quitThread.join();
+    for (auto it = clientThreads.begin(); it != clientThreads.end(); ++it){
+        (*it).join();
+    }
 
     return SUCCESSRETURNVALUE;
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <netinet/in.h>
 #include "commonTPException.h"
 #include "clientSocket.h"
@@ -15,7 +16,7 @@ int main(int argc, char *argv[]) {
     std::string execMode = argv[3];
     std::string userID;
 
-    /* build string with client info for server */
+    /* build string with client info for server1 */
     std::string clientInfo = execMode;
 
     /* if user is not admin, get its user ID */
@@ -27,11 +28,11 @@ int main(int argc, char *argv[]) {
 
     clientSocket socket(serverIP, portToConnect);
 
-    /* send client information to server */
+    /* send client information to server1 */
     socket.socket_send(clientInfo);
 
     std::string input;
-    while(getline(std::cin, input)){
+    while (getline(std::cin, input)){
         bool socketWasShutDown = false;
         std::string command = input.substr(0, input.find(' '));
         input.erase(0, input.find(' '));
@@ -46,8 +47,8 @@ int main(int argc, char *argv[]) {
         }
         socket.socket_send(input);
         std::string msgFromServer = socket.socket_recv(socketWasShutDown);
-        /* print server msg */
-        std::cerr<<msgFromServer;
+        /* print server1 msg */
+        std::cout<<msgFromServer;
     }
     socket.socket_close();
     return 0;
