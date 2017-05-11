@@ -13,7 +13,7 @@
 
 
 
-void server::processSubjectsFile(std::string filepath) {
+void server::processSubjectsFile(const std::string &filepath) {
     std::ifstream subjectsFile;
     subjectsFile.open(filepath);
     subjectsFile.seekg(0);
@@ -37,7 +37,7 @@ void server::processSubjectsFile(std::string filepath) {
     subjectsFile.close();
 }
 
-void server::processUsersFile(std::string filePath) {
+void server::processUsersFile(const std::string &filePath) {
     std::ifstream usersFile;
     usersFile.open(filePath);
     usersFile.seekg(0);
