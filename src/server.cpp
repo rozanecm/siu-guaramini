@@ -9,11 +9,7 @@
 #include "serverTeacher.h"
 #include "serverStudent.h"
 
-
-
-
-
-void server::processSubjectsFile(const std::string &filepath) {
+void server::processSubjectsFile(std::string filepath) {
     std::ifstream subjectsFile;
     subjectsFile.open(filepath);
     subjectsFile.seekg(0);
@@ -37,7 +33,7 @@ void server::processSubjectsFile(const std::string &filepath) {
     subjectsFile.close();
 }
 
-void server::processUsersFile(const std::string &filePath) {
+void server::processUsersFile(std::string filePath) {
     std::ifstream usersFile;
     usersFile.open(filePath);
     usersFile.seekg(0);
@@ -225,7 +221,8 @@ std::string
 server::unEnroll(const int &studentID, const int &subjectID,
                  const int &courseID,
                const int &teacherID) {
-    if (teachers.count(teacherID) == 0){
+    if (!teachers.at(teacherID).teaches(subjectID, courseID)){
+//    if (teachers.count(teacherID) == 0){
         std::string retStrg = "No tiene permisos para operar sobre " +
                               std::to_string(subjectID) +
                               ", curso " + std::to_string(courseID) + ".\n";
@@ -297,7 +294,7 @@ server::getReasonWhyDataIsNotValid(const int &id, const int &materia,
         /* course has no vacancies */
         std::string retStrg = "El curso " + std::to_string(curso) +
                               " de la materia " + std::to_string(materia) +
-                              " no posee más vacantes.\n";
+                              " no posee mas vacantes.\n";
         return retStrg;
     }
 }

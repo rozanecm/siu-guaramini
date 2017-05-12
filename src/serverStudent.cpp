@@ -32,7 +32,7 @@ Student::listEnrollments(const std::map<std::pair<int, int>, Subject> &subjects,
         retStrng.append(std::to_string((*it).first));
         retStrng.append(" - ");
         retStrng.append(subjects.at((*it)).getDescription());
-        retStrng.append(", Curso");
+        retStrng.append(", Curso ");
         retStrng.append(std::to_string((*it).second));
         retStrng.append(", ");
         retStrng.append(teachers.at(subjects.at((*it)).getTeacherID()).

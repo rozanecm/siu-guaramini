@@ -39,9 +39,9 @@ private:
                                            const int &curso);
 
 public:
-    void processUsersFile(const std::string &filePath);
+    void processUsersFile(std::string filePath);
 
-    void processSubjectsFile(const std::string &filepath);
+    void processSubjectsFile(std::string filepath);
 
     bool validateClientData(const std::string &userType,
                             const std::string &userIDstring);

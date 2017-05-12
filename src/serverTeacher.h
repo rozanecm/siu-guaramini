@@ -35,6 +35,8 @@ public:
     void unEnroll(int studentID);
 
     void setSubjectAndCourseID(const int &subjectID, const int &courseID);
+
+    bool teaches(const int &subjectID, const int &courseID);
 };
 
 

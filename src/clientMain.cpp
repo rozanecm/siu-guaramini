@@ -4,8 +4,6 @@
 #include "commonTPException.h"
 #include "clientSocket.h"
 
-#define BYTESFORLENGTHOFMESSAGE 4
-
 int main(int argc, char *argv[]) {
     /* check num. of arguments recieved */
     if (argc < 4){
@@ -31,12 +29,7 @@ int main(int argc, char *argv[]) {
     clientSocket socket(serverIP, portToConnect);
 
     /* send client information to server1 */
-    /* first send msg length */
-    unsigned long msgSize = clientInfo.size();
-    uint32_t netLenMsgSize = htonl(msgSize);
-    socket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
-    /* send actual msg */
-    socket.socket_send(clientInfo.c_str(), msgSize);
+    socket.socket_send(clientInfo);
 
     std::string input;
     while (getline(std::cin, input)){
@@ -52,24 +45,8 @@ int main(int argc, char *argv[]) {
         }else if (command == "desinscribir"){
             input.insert(0, "de");
         }
-        /* first send msg length */
-        unsigned long msgSize = input.size();
-        uint32_t netLenMsgSize = htonl(msgSize);
-        socket.socket_send((char*)&netLenMsgSize, BYTESFORLENGTHOFMESSAGE);
-        /* send actual msg */
-        socket.socket_send(input.c_str(), msgSize);
-
-        /* read msg from server */
-        /* first get msg's length */
-        size_t messageToReadLength;
-        socket.socket_recv(socketWasShutDown, BYTESFORLENGTHOFMESSAGE,
-                           (char*)&messageToReadLength);
-        messageToReadLength = ntohl(messageToReadLength);
-        /* get actual msg */
-        std::string msgFromServer;
-        socket.socket_recv(socketWasShutDown, BYTESFORLENGTHOFMESSAGE,
-                           (char*)&msgFromServer);
-
+        socket.socket_send(input);
+        std::string msgFromServer = socket.socket_recv(socketWasShutDown);
         /* print server1 msg */
         std::cout<<msgFromServer;
     }
