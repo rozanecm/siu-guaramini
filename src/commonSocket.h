@@ -17,7 +17,6 @@ public:
                                 char *messageToReceive);
 
     void socket_close();
-
 };
 
 

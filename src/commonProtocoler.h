@@ -3,6 +3,7 @@
 
 
 #include "commonSocket.h"
+#include <string>
 
 class commonProtocoler {
 public:

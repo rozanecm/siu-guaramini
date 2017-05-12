@@ -3,6 +3,8 @@
 
 #define BYTESFORLENGTHOFMESSAGE 4
 
+#include <string>
+
 void commonProtocoler::send(commonSocket &socket, const std::string &message) {
     /* first send msg length */
     unsigned long msgSize = message.size();
@@ -16,13 +18,15 @@ std::string
 commonProtocoler::recv(commonSocket &socket, bool &socketWasShutDown) {
     /* first get msg's length */
     size_t messageToReadLength;
-    socket.socket_recv(socketWasShutDown, BYTESFORLENGTHOFMESSAGE, (char*)&messageToReadLength);
+    socket.socket_recv(socketWasShutDown, BYTESFORLENGTHOFMESSAGE,
+                       (char*)&messageToReadLength);
     if (socketWasShutDown)
         return "";
     messageToReadLength = ntohl(messageToReadLength);
     /* get actual msg */
     char msgFromServerChar[500] = "";
-    socket.socket_recv(socketWasShutDown, messageToReadLength, msgFromServerChar);
+    socket.socket_recv(socketWasShutDown, messageToReadLength,
+                       msgFromServerChar);
     std::string msgReceived(msgFromServerChar);
     return msgReceived;
 }

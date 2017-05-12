@@ -37,7 +37,8 @@ void commonSocket::socket_close() {
     }
 }
 
-std::string commonSocket::socket_recv(bool &socketShutDown, size_t messageToReadLength,
+std::string commonSocket::socket_recv(bool &socketShutDown,
+                                      size_t messageToReadLength,
                                       char *messageToReceive) {
     size_t totalRecievedAmount = 0;
     ssize_t lastRecievedAmount = 0;
