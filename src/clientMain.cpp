@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include "commonTPException.h"
 #include "clientSocket.h"
+#include "commonProtocoler.h"
 
 int main(int argc, char *argv[]) {
     /* check num. of arguments recieved */
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
     clientSocket socket(serverIP, portToConnect);
 
     /* send client information to server1 */
-    socket.socket_send(clientInfo);
+    commonProtocoler::send(socket, clientInfo);
 
     std::string input;
     while (getline(std::cin, input)){
@@ -45,8 +46,10 @@ int main(int argc, char *argv[]) {
         }else if (command == "desinscribir"){
             input.insert(0, "de");
         }
-        socket.socket_send(input);
-        std::string msgFromServer = socket.socket_recv(socketWasShutDown);
+        commonProtocoler::send(socket, input);
+
+        std::string msgFromServer = commonProtocoler::recv(socket,
+                                                           socketWasShutDown);
         /* print server1 msg */
         std::cout<<msgFromServer;
     }

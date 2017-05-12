@@ -1,5 +1,7 @@
 #include "serverClientThread.h"
+#include "commonProtocoler.h"
 #include <string>
+#include <netinet/in.h>
 
 ClientThread::ClientThread(ServerSocket serverSocket1, serverMonitor &server,
                            bool &quit) :
@@ -7,7 +9,8 @@ ClientThread::ClientThread(ServerSocket serverSocket1, serverMonitor &server,
 
 void ClientThread::run() {
     bool socketWasClosed = false;
-    std::string clientData =  serverSocket.socket_recv(socketWasClosed);
+    std::string clientData = commonProtocoler::recv(serverSocket,
+                                                    socketWasClosed);
     /* from the client data, get what type of user just connected */
     clientData = clientData.substr(0, clientData.find_first_of("\f"));
     std::string userType =
@@ -29,9 +32,10 @@ void ClientThread::run() {
 
     while (!socketWasClosed && !quit){
         /* get msg from client */
-        std::string receivedMsg = serverSocket.
-                socket_recv(socketWasClosed);
-
+        std::string receivedMsg = commonProtocoler::recv(serverSocket,
+                                                         socketWasClosed);
+        if (socketWasClosed)
+            break;
         /* retrieve commmand from msg */
         std::string command = receivedMsg.substr(0, 2);
         receivedMsg.erase(0, 3);
@@ -41,13 +45,15 @@ void ClientThread::run() {
             /* command code: lm -> listar materias */
             server.informReceivedCommand(userType, userIDstring, "lm");
             std::string msgToSend = server.listSubjects();
-            serverSocket.socket_send(msgToSend);
+
+            commonProtocoler::send(serverSocket, msgToSend);
         }else if (command == "li"){
             /* command code: li -> listar inscripciones */
             server.informReceivedCommand(userType, userIDstring, "li");
             std::string msgToSend = server.
                     listEnrollments(userType, std::stoi(userIDstring));
-            serverSocket.socket_send(msgToSend);
+
+            commonProtocoler::send(serverSocket, msgToSend);
         }else if (command == "in"){
             /* command code: in -> inscribirse */
             server.informReceivedCommand(userType, userIDstring, "in");
@@ -68,7 +74,8 @@ void ClientThread::run() {
                 msgForClient = server.enroll(idAlumno, codigoMateria,
                                              codigoCurso);
             }
-            serverSocket.socket_send(msgForClient);
+
+            commonProtocoler::send(serverSocket, msgForClient);
         }else if (command == "de"){
             /* command code: de -> desinscribirse */
             server.informReceivedCommand(userType, userIDstring, "de");
@@ -91,7 +98,7 @@ void ClientThread::run() {
                 msgForClient = server.unEnroll(idAlumno, codigoMateria,
                                                codigoCurso);
             }
-            serverSocket.socket_send(msgForClient);
+            commonProtocoler::send(serverSocket, msgForClient);
         }
     }
     serverSocket.socket_close();
