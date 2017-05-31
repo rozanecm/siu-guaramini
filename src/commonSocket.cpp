@@ -58,8 +58,7 @@ std::string commonSocket::socket_recv(bool &socketShutDown,
             totalRecievedAmount += lastRecievedAmount;
         }
     }
-    std::string asdf = std::string(&messageToReceive[0],
+    std::string retStr = std::string(&messageToReceive[0],
                                   &messageToReceive[messageToReadLength]);
-    return asdf;
+    return retStr;
 }
-

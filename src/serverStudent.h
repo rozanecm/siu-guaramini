@@ -30,7 +30,7 @@ public:
 
     std::string getName() const;
 
-    Student(int id, std::string name);
+    Student(int id, const std::string &name);
 };
 
 

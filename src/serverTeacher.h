@@ -22,7 +22,7 @@ private:
     /* key: student ID value: codMateria codCurso */
 
 public:
-    Teacher(int id, std::string name);
+    Teacher(int id, const std::string &name);
 
     std::string getName() const;
 

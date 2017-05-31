@@ -5,7 +5,9 @@
 
 ClientThread::ClientThread(ServerSocket serverSocket1, serverMonitor &server,
                            bool &quit) :
-        serverSocket(serverSocket1), server(server), quit(quit) {}
+        serverSocket(serverSocket1), server(server), quit(quit) {
+    erasable = false;
+}
 
 void ClientThread::run() {
     bool socketWasClosed = false;
@@ -16,7 +18,7 @@ void ClientThread::run() {
     std::string userType =
             clientData.substr(0, clientData.find_first_of(" "));
     clientData.erase(0, clientData.find_first_of(" ") + 1);
-    std::string userIDstring;
+    std::string userIDstring = "";
 
     if (userType != "admin") {
         /* if it is not admin, get its id */
@@ -59,7 +61,7 @@ void ClientThread::run() {
             server.informReceivedCommand(userType, userIDstring, "in");
 
             int idAlumno, codigoMateria, codigoCurso;
-            std::string msgForClient;
+            std::string msgForClient = "";
 
             /* get data from input */
             getDataFromInputForEnrollOrUnenrollCommand(receivedMsg, userType,
@@ -81,7 +83,7 @@ void ClientThread::run() {
             server.informReceivedCommand(userType, userIDstring, "de");
 
             int idAlumno, codigoMateria, codigoCurso;
-            std::string msgForClient;
+            std::string msgForClient = "";
 
             /* get data from input */
             getDataFromInputForEnrollOrUnenrollCommand(receivedMsg, userType,
@@ -139,5 +141,5 @@ void ClientThread::getDataFromInputForEnrollOrUnenrollCommand(
 }
 
 bool ClientThread::isErasable() {
-    return erasable;
+    return this->erasable;
 }

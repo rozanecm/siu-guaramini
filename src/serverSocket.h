@@ -7,8 +7,6 @@
 
 class ServerSocket : public commonSocket {
 public:
-    explicit ServerSocket(int fd);
-
     explicit ServerSocket(const char *port);
 
     void socket_listen();
@@ -16,6 +14,9 @@ public:
     ServerSocket socket_accept();
 
     void socket_shutdown();
+
+private:
+    explicit ServerSocket(int fd);
 };
 
 

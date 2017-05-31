@@ -53,13 +53,14 @@ int main(int argc, char *argv[]) {
             /* first remove inactive threads */
             for (auto it = clientThreads.begin(); it != clientThreads.end();
                  ++it){
-                if ((*it).isErasable()){
-                    (*it).join();
+                if (it->isErasable()){
+                    it->join();
                     it = clientThreads.erase(it);
                 }
             }
 
-            clientThreads.emplace_back(serverSocket.socket_accept(),
+            ServerSocket acceptedSocket = serverSocket.socket_accept();
+            clientThreads.emplace_back(acceptedSocket,
                                        serverMonitor1, haveToQuit);
             clientThreads.back().start();
         }
@@ -69,6 +70,8 @@ int main(int argc, char *argv[]) {
     for (auto it = clientThreads.begin(); it != clientThreads.end(); ++it){
         (*it).join();
     }
+    clientThreads.clear();
 
+    serverSocket.socket_close();
     return SUCCESSRETURNVALUE;
 }

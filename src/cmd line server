@@ -1,0 +1,1 @@
+./server 8080 ../tests/test0/input/usuarios.txt ../tests/test0/input/materias.txt

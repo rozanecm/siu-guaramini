@@ -9,12 +9,16 @@
 #include "serverTeacher.h"
 #include "serverStudent.h"
 
-void server::processSubjectsFile(std::string filepath) {
+void server::processSubjectsFile(const std::string &filepath) {
     std::ifstream subjectsFile;
     subjectsFile.open(filepath);
     subjectsFile.seekg(0);
 
-    std::string description, subjectID, courseID, teacherID, vacantes;
+    std::string description = "";
+    std::string subjectID = "";
+    std::string courseID = "";
+    std::string teacherID = "";
+    std::string vacantes = "";
     while (getline(subjectsFile, subjectID, '\t')) {
         getline(subjectsFile, courseID, '\t');
         getline(subjectsFile, description, '\t');
@@ -33,12 +37,14 @@ void server::processSubjectsFile(std::string filepath) {
     subjectsFile.close();
 }
 
-void server::processUsersFile(std::string filePath) {
+void server::processUsersFile(const std::string &filePath) {
     std::ifstream usersFile;
     usersFile.open(filePath);
     usersFile.seekg(0);
 
-    std::string userType, name, id;
+    std::string userType = "";
+    std::string name = "";
+    std::string id = "";
     while (getline(usersFile, userType, '\t')) {
         getline(usersFile, id, '\t');
         getline(usersFile, name, '\n');
@@ -77,7 +83,7 @@ server::validateClientData(const std::string &userType,
             return false;
         }
         /* output message of new connection */
-        std::string s;
+        std::string s = "";
         s = userType + " " + userIDstring + " conectado.\n";
         std::cerr<<s;
     }else if (userType == "admin"){
@@ -97,7 +103,7 @@ void server::informReceivedCommand(const std::string &userType,
                                    const std::string &userID,
                                    const char *command) {
     std::string originalCommand = command;
-    std::string extendedCommand;
+    std::string extendedCommand = "";
     if (originalCommand == "lm"){
         extendedCommand = "listarMaterias";
     }else if (originalCommand == "li"){
@@ -133,7 +139,7 @@ void server::informDisconnect(const std::string &userType,
 }
 
 std::string server::listSubjects() const{
-    std::string returnString;
+    std::string returnString = "";
     for (auto it = subjects.cbegin(); it != subjects.cend(); ++it){
         /* names here are in spanish so it is easier to follow instructions */
         std::string codigoMateria = std::to_string((*it).first.first);
@@ -159,7 +165,7 @@ std::string server::listEnrollments(const std::string &userType,
         return teachers.at(id).listEnrollments(subjects,
                                                students);
     }else{
-        std::string enrollmentsMsg;
+        std::string enrollmentsMsg = "";
         for (auto it = subjects.cbegin(); it != subjects.cend(); ++it){
             enrollmentsMsg.append(teachers.at((*it).second.getTeacherID()).
                     listEnrollments(subjects, students));

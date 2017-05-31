@@ -4,7 +4,7 @@
 #include <map>
 #include "serverStudent.h"
 
-Student::Student(int id, std::string name) : ID(id), name(name){}
+Student::Student(int id, const std::string &name) : ID(id), name(name){}
 
 void Student::enroll(int codigoMateria, int codigoCurso) {
     enrolledSubjects.push_front(std::pair<int, int>(codigoMateria,
@@ -26,7 +26,7 @@ std::string
 Student::listEnrollments(const std::map<std::pair<int, int>, Subject> &subjects,
                          const std::map<int, Teacher> &teachers) {
     enrolledSubjects.sort();
-    std::string retStrng;
+    std::string retStrng = "";
     for (auto it = enrolledSubjects.begin(); it != enrolledSubjects.end();
          ++it){
         retStrng.append(std::to_string((*it).first));

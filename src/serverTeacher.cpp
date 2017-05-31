@@ -5,7 +5,7 @@
 #include <sstream>
 #include "serverSubject.h"
 
-Teacher::Teacher(int id, std::string name) : ID(id), name(name){}
+Teacher::Teacher(int id, const std::string &name) : ID(id), name(name){}
 
 std::string Teacher::getName() const {
     return name;

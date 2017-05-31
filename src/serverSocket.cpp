@@ -66,10 +66,8 @@ void ServerSocket::socket_listen() {
 }
 
 ServerSocket ServerSocket::socket_accept() {
-    struct sockaddr clientSocket;
-    socklen_t cliLength = sizeof(clientSocket);
-    int ret = accept(fd, (struct sockaddr *)&clientSocket,
-                     &cliLength);
+    socklen_t cliLength = sizeof(sockaddr);
+    int ret = accept(fd, nullptr, &cliLength);
 
     /* From accept man page:
      * On success, these system calls return a nonnegative integer that is a

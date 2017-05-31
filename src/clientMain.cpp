@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     const char *serverIP = argv[1];
     const char *portToConnect = argv[2];
     std::string execMode = argv[3];
-    std::string userID;
+    std::string userID = "";
 
     /* build string with client info for server1 */
     std::string clientInfo = execMode;
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     /* send client information to server1 */
     commonProtocoler::send(socket, clientInfo);
 
-    std::string input;
+    std::string input = "";
     while (getline(std::cin, input)){
         bool socketWasShutDown = false;
         std::string command = input.substr(0, input.find(' '));
@@ -53,6 +53,5 @@ int main(int argc, char *argv[]) {
         /* print server1 msg */
         std::cout<<msgFromServer;
     }
-    socket.socket_close();
     return 0;
 }

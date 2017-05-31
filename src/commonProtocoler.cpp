@@ -17,7 +17,7 @@ void commonProtocoler::send(commonSocket &socket, const std::string &message) {
 std::string
 commonProtocoler::recv(commonSocket &socket, bool &socketWasShutDown) {
     /* first get msg's length */
-    size_t messageToReadLength;
+    size_t messageToReadLength = 0;
     socket.socket_recv(socketWasShutDown, BYTESFORLENGTHOFMESSAGE,
                        (char*)&messageToReadLength);
     if (socketWasShutDown)
